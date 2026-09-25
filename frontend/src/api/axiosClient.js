@@ -8,7 +8,8 @@ const axiosClient = axios.create({
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.error || error.message || 'Something went wrong'
+    const code = error.response?.data?.code
+    const message = (error.response?.data?.error || error.message || 'Something went wrong') + (code ? ` [${code}]` : '')
     const err = new Error(message)
     err.details = error.response?.data?.details
     err.status = error.response?.status
