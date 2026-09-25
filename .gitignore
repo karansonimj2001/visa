@@ -1,8 +1,12 @@
 backend/.env
 backend/db.sqlite3
 backend/media/
+backend/passports/
+backend/photos/
+backend/national_ids/
 backend/logs/
 backend/staticfiles/
+frontend/tsconfig.tsbuildinfo
 frontend/node_modules/
 frontend/dist/
 *.pyc
