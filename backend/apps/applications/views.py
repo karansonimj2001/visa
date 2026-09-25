@@ -51,7 +51,7 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         except Exception as e:
             logger.error(f"Application creation error: {e}", exc_info=True)
             return Response(
-                {'error': 'An error occurred while creating your application'},
+                {'error': 'An error occurred while creating your application', 'code': type(e).__name__},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
