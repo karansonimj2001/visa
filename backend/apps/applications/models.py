@@ -31,7 +31,7 @@ class Application(models.Model):
     destination = models.ForeignKey('core.Destination', on_delete=models.CASCADE, related_name='applications')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid')
-    stripe_payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -58,7 +58,8 @@ class Application(models.Model):
 
 class Payment(models.Model):
     application = models.OneToOneField(Application, on_delete=models.CASCADE, related_name='payment')
-    stripe_payment_intent_id = models.CharField(max_length=255)
+    razorpay_order_id = models.CharField(max_length=255)
+    razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=3, default='USD')
     status = models.CharField(max_length=20, choices=Application.PAYMENT_STATUS_CHOICES, default='unpaid')

@@ -21,6 +21,6 @@ class DestinationAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['application', 'amount', 'currency', 'status', 'stripe_payment_intent_id', 'created_at']
+    list_display = ['application', 'amount', 'currency', 'status', 'razorpay_order_id', 'created_at']
     list_filter = ['status', 'currency']
     raw_id_fields = ['application']

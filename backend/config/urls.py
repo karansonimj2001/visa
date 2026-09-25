@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from core.views import CountryViewSet, VisaTypeViewSet, PricingViewSet, DestinationViewSet
 from applications.views import ApplicationViewSet
 from payments.views import PaymentViewSet
-from payments.webhooks import stripe_webhook
+from payments.webhooks import razorpay_webhook
 from django.views.decorators.csrf import csrf_exempt
 
 router = DefaultRouter()
@@ -18,5 +18,5 @@ router.register(r'payments', PaymentViewSet, basename='payment')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/payments/webhook/', csrf_exempt(stripe_webhook), name='stripe-webhook'),
+    path('api/payments/webhook/', csrf_exempt(razorpay_webhook), name='razorpay-webhook'),
 ]

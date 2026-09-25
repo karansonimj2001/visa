@@ -273,7 +273,7 @@ export default function Home() {
               </div>
               <h3 className="font-headline-sm text-headline-sm text-primary font-bold mb-2">How to Apply in 3 Steps</h3>
               <div className="flex flex-col gap-2 p-space-sm rounded-lg bg-surface-container-low mb-space-md">
-                {['Fill personal credentials', 'Upload passport & photo', 'Pay securely via Stripe'].map((s, i) => (
+                {['Fill personal credentials', 'Upload passport & photo', 'Pay securely online'].map((s, i) => (
                   <div key={s} className="flex items-center gap-2 font-body-sm text-body-sm">
                     <span className="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-[11px]">{i + 1}</span>
                     <span>{s}</span>

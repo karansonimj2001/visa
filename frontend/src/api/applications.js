@@ -4,4 +4,4 @@ export const submitApplication = (formData) => axiosClient.post('/applications/'
   headers: { 'Content-Type': 'multipart/form-data' }
 })
 export const trackApplication = (ref) => axiosClient.get('/applications/track/', { params: { ref } })
-export const createPaymentIntent = (data) => axiosClient.post('/payments/create-intent/', data)
+export const createRazorpayOrder = (data) => axiosClient.post('/payments/create-order/', data)

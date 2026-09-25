@@ -1,5 +1,6 @@
 from rest_framework.response import Response
-import stripe
+import razorpay
+from razorpay.errors import BadRequestError, ServerError
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.throttling import ScopedRateThrottle
@@ -9,15 +10,19 @@ import logging
 from core.models import Pricing
 from applications.models import Application, Payment
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
+
+
+def get_razorpay_client():
+    return razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 
 class PaymentViewSet(viewsets.ViewSet):
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'create-payment'
 
-    @action(detail=False, methods=['post'], url_path='create-intent')
-    def create_intent(self, request):
+    @action(detail=False, methods=['post'], url_path='create-order')
+    def create_order(self, request):
         try:
             application_id = request.data.get('application_id')
             if not application_id:
@@ -36,34 +41,41 @@ class PaymentViewSet(viewsets.ViewSet):
                 )
             except Pricing.DoesNotExist:
                 return Response({'error': 'Pricing not available for this combination'}, status=status.HTTP_404_NOT_FOUND)
+            # Razorpay takes the amount in the smallest currency unit.
             amount = int(pricing.price * 100)
+            currency = (pricing.currency or 'USD').upper()
 
-            intent = stripe.PaymentIntent.create(
-                amount=amount,
-                currency='usd',
-                metadata={
+            client = get_razorpay_client()
+            order = client.order.create({
+                'amount': amount,
+                'currency': currency,
+                'receipt': app.reference_number,
+                'notes': {
                     'application_id': str(app.id),
                     'reference_number': app.reference_number,
                 },
-            )
+            })
 
             with transaction.atomic():
                 Payment.objects.update_or_create(
                     application=app,
                     defaults={
-                        'stripe_payment_intent_id': intent.id,
+                        'razorpay_order_id': order['id'],
                         'amount': pricing.price,
-                        'currency': 'usd',
+                        'currency': currency,
                         'status': 'unpaid',
                     }
                 )
-                app.stripe_payment_intent_id = intent.id
-                app.save(update_fields=['stripe_payment_intent_id'])
+                app.razorpay_order_id = order['id']
+                app.save(update_fields=['razorpay_order_id'])
 
+            # NOTE: only the public key_id is ever sent to the frontend.
+            # The key secret stays server-side.
             return Response({
-                'client_secret': intent.client_secret,
+                'order_id': order['id'],
                 'amount': amount,
-                'currency': 'usd',
+                'currency': currency,
+                'key_id': settings.RAZORPAY_KEY_ID,
                 'reference_number': app.reference_number,
                 'application_id': app.id,
                 'visa_name': app.visa_type.name,
@@ -71,11 +83,11 @@ class PaymentViewSet(viewsets.ViewSet):
                 'destination_name': app.destination.name if app.destination_id else None,
             })
 
-        except stripe.error.StripeError as e:
-            logger.error(f"Stripe error: {str(e)}", exc_info=True)
+        except (BadRequestError, ServerError) as e:
+            logger.error(f"Razorpay error: {str(e)}", exc_info=True)
             return Response({'error': 'Payment processing failed. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
         except Application.DoesNotExist:
             return Response({'error': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.error(f"Create intent error: {e}", exc_info=True)
+            logger.error(f"Create order error: {e}", exc_info=True)
             return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

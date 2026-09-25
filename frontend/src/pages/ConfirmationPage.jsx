@@ -252,7 +252,7 @@ export default function ConfirmationPage() {
                     <div className="flex flex-col text-center md:text-center">
                       <span className="text-xs font-semibold uppercase tracking-wider text-green-700">Step 1 • Completed</span>
                       <h3 className="text-lg font-bold text-blue-900 mt-1">Application & Payment</h3>
-                      <p className="text-gray-600 text-sm mt-1">Form submitted and payment received securely via Stripe.</p>
+                      <p className="text-gray-600 text-sm mt-1">Form submitted and payment received securely via Razorpay.</p>
                     </div>
                   </div>
                   

@@ -51,15 +51,15 @@ npm run dev
 - `SUPABASE_DB_DIRECT_URL` — Supabase direct connection URL (port 5432, for migrations only)
 - `SUPABASE_URL` — Your Supabase project URL
 - `SUPABASE_SERVICE_KEY` — Your Supabase service role key
-- `STRIPE_SECRET_KEY` — Stripe secret key
-- `STRIPE_WEBHOOK_SECRET` — Stripe webhook signing secret
-- `STRIPE_PUBLISHABLE_KEY` — Stripe publishable key (also used in frontend)
+- `RAZORPAY_KEY_ID` — Razorpay key ID (public, also used in frontend)
+- `RAZORPAY_KEY_SECRET` — Razorpay key secret (server only, never expose)
+- `RAZORPAY_WEBHOOK_SECRET` — Razorpay webhook signing secret
 - `CORS_ALLOWED_ORIGINS` — Comma-separated list of allowed origins
 - `SUPABASE_STORAGE_BUCKET` — Supabase storage bucket name (default: visa-documents)
 
 **Frontend (.env):**
 - `VITE_API_BASE_URL` — Backend API base URL
-- `VITE_STRIPE_PUBLISHABLE_KEY` — Stripe publishable key
+- `VITE_RAZORPAY_KEY_ID` — Razorpay key ID (public)
 
 ### Running Migrations
 
