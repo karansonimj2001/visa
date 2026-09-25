@@ -20,9 +20,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='pricing',
-            unique_together=set(),
+        # State-only: the old 2-field constraint/index is dropped (if present)
+        # by the IF EXISTS statements in the SeparateDatabaseAndState below.
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterUniqueTogether(
+                    name='pricing',
+                    unique_together=set(),
+                ),
+            ],
+            database_operations=[],
         ),
         migrations.AddField(
             model_name='pricing',
