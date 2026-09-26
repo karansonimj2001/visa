@@ -20,7 +20,10 @@ class PricingAdmin(admin.ModelAdmin):
     list_display = ['visa_type', 'citizen_country', 'travelling_from_country', 'destination', 'price', 'currency', 'is_active']
     list_filter = ['is_active', 'currency']
     list_editable = ['price', 'is_active']
-    raw_id_fields = ['visa_type', 'citizen_country', 'travelling_from_country', 'destination']
+    # NOTE: no raw_id_fields here on purpose — countries/visas/destinations
+    # are tiny tables, so plain dropdowns (select by NAME) are used.
+    # raw_id_fields would force typing numeric IDs and cause
+    # "Select a valid choice" errors for normal users.
 
     def save_model(self, request, obj, form, change):
         from django.db import IntegrityError, transaction

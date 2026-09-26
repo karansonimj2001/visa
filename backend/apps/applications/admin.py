@@ -8,7 +8,6 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_filter = ['status', 'payment_status', 'created_at']
     search_fields = ['reference_number', 'full_name', 'passport_number']
     list_editable = ['status', 'payment_status']
-    raw_id_fields = ['visa_type', 'citizen_country', 'travelling_from_country', 'destination']
     date_hierarchy = 'created_at'
 
 @admin.register(Destination)
