@@ -1,10 +1,10 @@
-# Dubai Visa Services Portal — Client Handover Guide
+# Dubai Visa Services Portal — Client Guide
 
-> **Owner note:** Is file ko client ko bhejne se pehle `ADMIN_USERNAME`, `ADMIN_PASSWORD` aur support phone number wali jagah bhar dena (neeche `[...]` me marked hai).
+> **Owner note:** Before sending this file to the client, fill in `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `SUPPORT_PHONE` where marked with `[...]`.
 
 ---
 
-## 1. Website Links
+## 1. Important Links
 
 | What | URL |
 |---|---|
@@ -15,61 +15,59 @@
 
 ---
 
-## 2. User Flow — kaise test karein (5 min)
+## 2. How to Test the Website (5 minutes)
 
-1. **Home** kholo → Citizen: **India**, Travelling From: **UAE**, Destination: **Dubai** → **Search Visas**
-   - 3 visa cards with live prices dikhne chahiye.
-2. Kisi card pe **Apply Now** → form bharo:
-   - Citizen **Pakistan** select karne pe **Section 3 (National ID)** appear hota hai, India pe nahi — ye conditional logic hai, test karo.
-   - Passport + photo upload karo (JPG/PNG/PDF, max 5 MB each).
-   - Attestation checkbox tick karke **Submit** → reference number milega (format `DXB-2026-XXXXXX`). **Ise note kar lo.**
-3. **Payment page** pe Razorpay popup khulega (UPI / cards / NetBanking) → test payment karo.
-4. **Confirmation page** pe reference card + **Download Receipt** button hai (real receipt file download hoti hai).
-5. **Track page** pe reference daalo → status card dikhega (`pending` → admin approve kare to `approved`).
+1. **Home page** — Select Citizen: **India**, Travelling From: **UAE**, Destination: **Dubai**, then click **Search Visas**. You should see 3 visa cards with live prices.
+2. Click **Apply Now** on any card and fill the form:
+   - Select Citizen **Pakistan** → a **National ID section (Section 3)** appears. Select **India** → it disappears. This conditional logic is intentional — please test both.
+   - Upload a passport scan and photo (JPG/PNG/PDF, max 5 MB each).
+   - Tick the declaration checkbox and **Submit**. You will get a **reference number** (like `DXB-2026-000123`). **Note it down.**
+3. The **Payment page** opens a Razorpay popup (UPI / cards / NetBanking). Complete a test payment.
+4. The **Confirmation page** shows your reference card. The **Download Receipt** button downloads a real receipt file.
+5. Open the **Track page**, enter your reference number → your application status card appears (`pending` → after admin approval, `approved`).
 
 ---
 
 ## 3. Admin Panel (CRM) Guide
 
-Admin ke **har edit page ke neeche "Frontend Live Preview"** section hai — usme **live website ka iframe** dikhta hai ki ye detail site pe kahan dikhegi. Pehle **Save** karo, phir preview refresh karo.
+**Tip:** At the bottom of every edit page there is a **"Frontend Live Preview"** section showing the live website page where that item appears. Always press **Save** first, then refresh the preview.
 
-### 3.1 Pricings (sabse important)
-- **Add Pricing**: Visa type + Citizen country select karo. **Travelling From** aur **Destination** khali chhodo = base price (sab ke liye). Kisi specific route ke liye alag rate chahiye to From/Destination bhi select karo — exact match jeetega, nahi to base price lagega.
-- **Price wahi amount hai jo customer se charge hoga.** Sochke dalo.
-- Jiski pricing nahi hogi, us country pe site "Contact us" dikhayegi (koi fake price nahi).
-- List me price **inline edit** hota hai (bina page khole).
+### 3.1 Pricings (most important)
+- **Add Pricing**: select Visa type + Citizen country. Leave **Travelling From** and **Destination** empty = base price for everyone. To charge a different price for a specific route (e.g. India → UAE → Dubai), fill From/Destination too — an exact match always wins, otherwise the base price applies.
+- **The price you enter is exactly what the customer is charged.** Enter it carefully.
+- Countries/visas with no pricing show a "Contact us" message on the site (this is correct behavior, not a bug).
+- Prices can also be edited directly in the list, without opening each row.
 
 ### 3.2 Countries
-- Name, slug (slug **kabhi change mat karna** — URLs toot jayengi), content (landing text).
-- **National ID toggle**: ON = us country ke form me National ID number + upload mandatory ho jayega.
-- Deactivate = lists/dropdowns se gayab.
+- Name, slug, landing text. **Never change the slug afterwards** — page URLs will break.
+- **National ID toggle**: when ON, that country's form requires a National ID number + upload.
+- Deactivating a country hides it from all dropdowns and lists.
 
 ### 3.3 Visa Types
-- Name, duration, entry type, category, processing time, validity, description. Deactivate = gayab.
+- Name, duration, entry type, category, processing time, validity, description. Deactivating hides it everywhere.
 
 ### 3.4 Destinations
-- Home + Apply ke dropdowns me dikhte hai. Naya add karoge to dono jagah aa jayega.
+- Appear in the Home and Apply dropdowns. Adding a new one shows it in both places immediately.
 
 ### 3.5 FAQs
-- Category `visa` = Visa detail page pe, `track` = Track page pe. **Order** se sequence. Khaali hai to section hidden rehta hai.
+- Set **Category** to `visa` (shows on visa detail pages) or `track` (shows on the Track page). Use **Order** (1, 2, 3…) for sequence. Empty categories stay hidden on the site.
 
 ### 3.6 Requirements
-- **Country khali** = har country pe dikhega (passport scan, photo, ticket jaise common docs). **Country select** = sirf us country pe extra item.
-- Icon me Material Symbols naam likho (jaise `menu_book`, `face`, `badge`).
+- Leave **Country empty** = shown for every country (passport scan, photo, return ticket). Select a **Country** = extra item shown only there. Use a Material Symbols icon name (e.g. `menu_book`, `face`, `badge`) and **Order** for sequence.
 
 ### 3.7 Site Settings
-- Key exactly `support_phone`, value me real number (jaise `+91 98200 12345`). Site pe 5 jagah (helpdesk, payment, confirmation, footers) update ho jayega. Key missing hai to number hidden rehta hai.
+- Key must be exactly `support_phone`, value is the real phone number (e.g. `+91 98200 12345`). It updates 5 places on the site (helpdesk boxes, payment page, confirmation page, footers). If the key is missing, the number stays hidden.
 
-### 3.8 Applications (roz ka kaam)
-- List me **search** (reference / naam / passport), **filter** (status / payment / date).
-- Row kholo → **Status** badlo (`under_review` → `approved` / `rejected`) → Save. User ke Track page pe turant reflect hoga.
-- **Payments** section me har application ka amount, Razorpay order/payment id aur status dikhta hai (read-only — webhook manage karta hai).
+### 3.8 Applications (daily work)
+- The list can be searched (reference / name / passport) and filtered (status / payment / date).
+- Open a row → change **Status** (`under_review` → `approved` / `rejected`) → Save. The customer's Track page updates instantly.
+- The **Payments** section shows amount, Razorpay order/payment IDs and status per application (managed automatically by webhooks — do not edit by hand).
 
 ---
 
 ## 4. Important Notes
 
-- **Prices = real money.** Jo Pricing me daloge wahi Razorpay charge karega. Test ke baad test applications delete kar dena.
-- **Slugs kabhi edit mat karna** (country / visa / destination ke links toot jayenge).
-- Support phone number: `[SUPPORT_PHONE]` (Site Settings me change hota hai).
-- Koi bhi doubt ho to apne developer se poocho — blindly values mat badlo.
+- **Prices = real money.** Whatever is in Pricing is what Razorpay charges. Delete test applications after testing.
+- **Never edit slugs** (country / visa / destination links will break).
+- Support phone number: `[SUPPORT_PHONE]` (changeable in Site Settings).
+- If anything behaves unexpectedly, contact your developer with the page URL and a screenshot — do not guess values in Admin.
