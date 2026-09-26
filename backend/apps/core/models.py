@@ -80,15 +80,20 @@ class Pricing(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+        # Use raw FK ids: accessing the relation objects here raises
+        # RelatedObjectDoesNotExist while the admin form is still being
+        # validated (which Django turns into a 500 instead of a form error).
+        if not self.visa_type_id or not self.citizen_country_id:
+            return
         qs = Pricing.objects.filter(
-            visa_type=self.visa_type, citizen_country=self.citizen_country,
+            visa_type_id=self.visa_type_id, citizen_country_id=self.citizen_country_id,
         )
         if self.travelling_from_country_id:
-            qs = qs.filter(travelling_from_country=self.travelling_from_country)
+            qs = qs.filter(travelling_from_country_id=self.travelling_from_country_id)
         else:
             qs = qs.filter(travelling_from_country__isnull=True)
         if self.destination_id:
-            qs = qs.filter(destination=self.destination)
+            qs = qs.filter(destination_id=self.destination_id)
         else:
             qs = qs.filter(destination__isnull=True)
         if self.pk:
