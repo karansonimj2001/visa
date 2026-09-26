@@ -22,6 +22,20 @@ class PricingAdmin(admin.ModelAdmin):
     list_editable = ['price', 'is_active']
     raw_id_fields = ['visa_type', 'citizen_country', 'travelling_from_country', 'destination']
 
+    def save_model(self, request, obj, form, change):
+        from django.db import IntegrityError, transaction
+        from django.core.exceptions import ValidationError
+        try:
+            with transaction.atomic():
+                super().save_model(request, obj, form, change)
+        except IntegrityError as e:
+            import logging
+            logging.getLogger('core').error(f"Pricing admin save failed: {e}", exc_info=True)
+            raise ValidationError(
+                'Could not save: a pricing row for this exact combination may already exist, '
+                'or the database rejected the values. Check for duplicates and try again.'
+            )
+
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
     list_display = ['title', 'slug', 'is_published', 'published_at', 'created_at']
