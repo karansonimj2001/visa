@@ -45,6 +45,10 @@ class Application(models.Model):
     def __str__(self):
         return f"{self.reference_number} - {self.full_name}"
 
+    def get_absolute_url(self):
+        from django.conf import settings
+        return f"{settings.FRONTEND_URL}/track?ref={self.reference_number}"
+
     @classmethod
     def generate_reference_number(cls):
         import random

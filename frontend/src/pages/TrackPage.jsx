@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { trackApplication } from '../api/applications'
 import useSiteSettings, { getSupportPhone } from '../hooks/useSiteSettings'
 
@@ -45,14 +45,14 @@ function Footer() {
 }
 
 export default function TrackPage() {
+  const [searchParams] = useSearchParams()
   const [ref, setRef] = useState('')
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleTrack = async (e) => {
-    e.preventDefault()
-    const trimmed = ref.trim()
+  const runTrack = async (reference) => {
+    const trimmed = (reference || '').trim()
     if (!trimmed) {
       setError('Please enter your reference number (e.g. DXB-2026-000123).')
       return
@@ -69,6 +69,22 @@ export default function TrackPage() {
       setLoading(false)
     }
   }
+
+  const handleTrack = (e) => {
+    e.preventDefault()
+    runTrack(ref)
+  }
+
+  // Support deep links like /track?ref=DXB-2026-000123 (used by the
+  // confirmation page and the Django Admin preview).
+  useEffect(() => {
+    const q = searchParams.get('ref')
+    if (q && q.trim()) {
+      setRef(q.trim())
+      runTrack(q.trim())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const statusBadge = (s) => {
     if (s === 'approved') return 'bg-green-100 text-green-800'

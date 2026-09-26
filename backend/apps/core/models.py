@@ -21,6 +21,11 @@ class Country(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        from django.conf import settings
+        return f"{settings.FRONTEND_URL}/countries/{self.slug}"
+
+
 class VisaType(models.Model):
     VISIT_CATEGORY_CHOICES = [
         ('tourist', 'Tourist'),
@@ -52,6 +57,11 @@ class VisaType(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        from django.conf import settings
+        return f"{settings.FRONTEND_URL}/visa-types/{self.slug}"
+
 
 class Pricing(models.Model):
     visa_type = models.ForeignKey(VisaType, on_delete=models.CASCADE, related_name='pricings')
@@ -212,3 +222,8 @@ class Destination(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        # Destinations only appear inside the Home/Apply dropdowns.
+        from django.conf import settings
+        return settings.FRONTEND_URL + '/'

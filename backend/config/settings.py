@@ -105,6 +105,10 @@ CORS_ALLOWED_ORIGINS = [
     for origin in os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
     if origin.strip()
 ]
+
+# Public frontend base URL, used for "View on site" links and the live
+# preview iframe inside Django Admin. Set to the Vercel domain in production.
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173').rstrip('/')
 CORS_ALLOW_CREDENTIALS = True
 
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID')
