@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { fetchVisaTypeBySlug } from '../api/visaTypes'
 import { fetchPricing } from '../api/pricing'
 import { fetchCountries } from '../api/countries'
+import { fetchFaqs } from '../api/site'
 
 export default function VisaTypePage() {
   const { slug } = useParams()
@@ -14,6 +15,7 @@ export default function VisaTypePage() {
   const [priceMissing, setPriceMissing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [openFaq, setOpenFaq] = useState(null)
+  const [faqs, setFaqs] = useState([])
 
   useEffect(() => {
     fetchVisaTypeBySlug(slug).then(res => {
@@ -21,6 +23,7 @@ export default function VisaTypePage() {
       setLoading(false)
     }).catch(() => setLoading(false))
     fetchCountries().then(r => setCountries(r.data.results || r.data)).catch(() => {})
+    fetchFaqs({ category: 'visa' }).then(r => setFaqs(r.data.results || r.data || [])).catch(() => {})
   }, [slug])
 
   const handleCitizenChange = (id) => {
@@ -47,12 +50,6 @@ export default function VisaTypePage() {
     { label: 'Entry Allowance', icon: 'flight_land', value: `${visa.entry_type === 'single' ? 'Single' : 'Multiple'} Entry`, sub: 'Airports DXB, AUH, SHJ, DWC, RKT' },
     { label: 'Processing SLA', icon: 'timer', value: visa.processing_time, sub: 'Standard processing queue' },
     { label: 'Visa Validity', icon: 'date_range', value: visa.visa_validity, sub: 'Calculated from approval date' },
-  ]
-
-  const faqs = [
-    { q: `Can this ${visa.duration_days}-day visa be extended without exiting the UAE?`, a: 'Extension rules depend on your visa category. Ask our support team before your stay expires — overstaying attracts fines.' },
-    { q: 'What are the penalties for overstaying in Dubai?', a: 'Overstaying can lead to daily fines plus an exit permit fee. Always depart before your authorized stay expires.' },
-    { q: 'Can I convert this tourist permit into an employment visa?', a: 'In many cases a UAE employer can sponsor a status change without you exiting. Confirm the current rules with your sponsor before relying on this.' },
   ]
 
   return (
@@ -182,24 +179,26 @@ export default function VisaTypePage() {
               </div>
             </div>
 
-            {/* FAQ */}
-            <div className="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
-              <div className="flex flex-col gap-1">
-                <span className="font-label-sm text-label-sm text-secondary font-semibold uppercase tracking-wider">FAQs</span>
-                <h3 className="font-headline-md text-headline-md text-primary font-bold">Common Questions</h3>
+            {/* FAQ — managed in Admin > FAQs (category: visa). Hidden until added. */}
+            {faqs.length > 0 && (
+              <div className="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+                <div className="flex flex-col gap-1">
+                  <span className="font-label-sm text-label-sm text-secondary font-semibold uppercase tracking-wider">FAQs</span>
+                  <h3 className="font-headline-md text-headline-md text-primary font-bold">Common Questions</h3>
+                </div>
+                <div className="flex flex-col gap-space-sm">
+                  {faqs.map((f, i) => (
+                    <div key={f.id || i} className="bg-surface-container-low rounded-lg p-space-md">
+                      <button className="w-full flex items-center justify-between text-left focus:outline-none" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                        <span className="font-label-lg text-label-lg text-primary font-bold">{f.question}</span>
+                        <span className={`material-symbols-outlined text-primary text-[20px] transition-transform ${openFaq === i ? 'rotate-180' : ''}`}>expand_more</span>
+                      </button>
+                      {openFaq === i && <div className="mt-space-sm font-body-sm text-body-sm text-on-surface-variant">{f.answer}</div>}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-space-sm">
-                {faqs.map((f, i) => (
-                  <div key={f.q} className="bg-surface-container-low rounded-lg p-space-md">
-                    <button className="w-full flex items-center justify-between text-left focus:outline-none" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                      <span className="font-label-lg text-label-lg text-primary font-bold">{f.q}</span>
-                      <span className={`material-symbols-outlined text-primary text-[20px] transition-transform ${openFaq === i ? 'rotate-180' : ''}`}>expand_more</span>
-                    </button>
-                    {openFaq === i && <div className="mt-space-sm font-body-sm text-body-sm text-on-surface-variant">{f.a}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
 
           {/* RIGHT: PRICING PANEL */}

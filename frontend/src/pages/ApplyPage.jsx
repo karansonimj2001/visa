@@ -5,6 +5,7 @@ import { fetchCountries } from '../api/countries'
 import { fetchDestinations } from '../api/destinations'
 import { fetchPricing } from '../api/pricing'
 import { submitApplication } from '../api/applications'
+import useSiteSettings, { getSupportPhone } from '../hooks/useSiteSettings'
 
 const inputClass = "w-full h-12 pl-10 pr-4 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all"
 const selectClass = "w-full h-12 pl-10 pr-10 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all cursor-pointer"
@@ -32,6 +33,8 @@ export default function ApplyPage() {
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [attested, setAttested] = useState(false)
+  const settings = useSiteSettings()
+  const supportPhone = getSupportPhone(settings)
   const passportInput = useRef(null)
   const photoInput = useRef(null)
   const nationalIdInput = useRef(null)
@@ -520,7 +523,7 @@ export default function ApplyPage() {
                   </div>
                   <div className="flex flex-col text-right">
                     <span className="font-headline-lg text-headline-lg text-primary font-bold leading-none">{priceText}</span>
-                    <span className="font-label-sm text-label-sm text-outline">USD net</span>
+                    <span className="font-label-sm text-label-sm text-outline">{price ? `${price.currency} net` : 'net'}</span>
                   </div>
                 </div>
               </div>
@@ -545,10 +548,12 @@ export default function ApplyPage() {
                 <span className="font-label-lg text-label-lg font-bold">Helpdesk</span>
               </div>
               <div className="flex flex-col gap-1.5 pt-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-on-surface-variant text-sm">Hotline:</span>
-                  <span className="font-bold text-primary">+971 4 000 0000</span>
-                </div>
+                {supportPhone && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-on-surface-variant text-sm">Hotline:</span>
+                    <a href={supportPhone.href} className="font-bold text-primary hover:underline">{supportPhone.display}</a>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-on-surface-variant text-sm">Direct Desk:</span>
                   <span className="font-bold text-on-tertiary-container flex items-center gap-1">

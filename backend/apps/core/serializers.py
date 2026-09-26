@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Country, VisaType, Pricing, Destination
+from .models import Country, VisaType, Pricing, Destination, SiteSetting, FAQ, Requirement
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +23,21 @@ class DestinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
         fields = ['id', 'name', 'slug', 'country', 'description', 'processing_time', 'is_active']
+
+
+class SiteSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSetting
+        fields = ['key', 'value']
+
+
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = ['id', 'category', 'question', 'answer', 'order']
+
+
+class RequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requirement
+        fields = ['id', 'icon', 'title', 'description', 'order']

@@ -168,14 +168,10 @@ ON CONFLICT (slug) DO NOTHING;
 -- ============================================
 -- SEED DATA: Pricing
 -- ============================================
-INSERT INTO core_pricing (visa_type_id, citizen_country_id, price, currency, is_active) VALUES
-((SELECT id FROM core_visatype WHERE slug = '14-days-single'), (SELECT id FROM core_country WHERE slug = 'india-citizens'), 85, 'USD', TRUE),
-((SELECT id FROM core_visatype WHERE slug = '14-days-single'), (SELECT id FROM core_country WHERE slug = 'uae-citizens'), 120, 'USD', TRUE),
-((SELECT id FROM core_visatype WHERE slug = '30-days-multiple'), (SELECT id FROM core_country WHERE slug = 'india-citizens'), 150, 'USD', TRUE),
-((SELECT id FROM core_visatype WHERE slug = '30-days-multiple'), (SELECT id FROM core_country WHERE slug = 'uae-citizens'), 200, 'USD', TRUE),
-((SELECT id FROM core_visatype WHERE slug = '96-hours-transit'), (SELECT id FROM core_country WHERE slug = 'india-citizens'), 45, 'USD', TRUE),
-((SELECT id FROM core_visatype WHERE slug = '96-hours-transit'), (SELECT id FROM core_country WHERE slug = 'uae-citizens'), 60, 'USD', TRUE)
-ON CONFLICT DO NOTHING;
+-- NOTE: no demo rates seeded on purpose. Add real pricing per
+-- (visa x citizen x travelling-from x destination) via Django Admin >
+-- Pricing. Countries/visas without pricing show the "contact us"
+-- empty state on the site.
 
 -- ============================================
 -- SEED DATA: Destinations

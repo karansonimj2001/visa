@@ -3,8 +3,11 @@ from rest_framework.response import Response
 from django.db.models import Q
 from django.db import transaction
 import logging
-from .models import Country, VisaType, Pricing, Destination
-from .serializers import CountrySerializer, VisaTypeSerializer, PricingSerializer, DestinationSerializer
+from .models import Country, VisaType, Pricing, Destination, SiteSetting, FAQ, Requirement
+from .serializers import (
+    CountrySerializer, VisaTypeSerializer, PricingSerializer, DestinationSerializer,
+    SiteSettingSerializer, FAQSerializer, RequirementSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,3 +57,36 @@ class DestinationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Destination.objects.filter(is_active=True)
     serializer_class = DestinationSerializer
     lookup_field = 'slug'
+
+
+class SiteSettingViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SiteSetting.objects.all()
+    serializer_class = SiteSettingSerializer
+
+    def list(self, request):
+        settings = {s.key: s.value for s in self.get_queryset() if s.value}
+        return Response(settings)
+
+
+class FAQViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = FAQ.objects.filter(is_active=True)
+    serializer_class = FAQSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        category = self.request.query_params.get('category')
+        if category:
+            qs = qs.filter(category=category)
+        return qs
+
+
+class RequirementViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Requirement.objects.filter(is_active=True)
+    serializer_class = RequirementSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        country_id = self.request.query_params.get('country')
+        if country_id:
+            qs = qs.filter(Q(country__isnull=True) | Q(country_id=country_id))
+        return qs

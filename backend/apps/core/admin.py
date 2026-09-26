@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Country, VisaType, Pricing, BlogPost
+from .models import Country, VisaType, Pricing, BlogPost, SiteSetting, FAQ, Requirement
 
 @admin.register(Country)
 class CountryAdmin(admin.ModelAdmin):
@@ -28,3 +28,26 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_filter = ['is_published', 'created_at']
     search_fields = ['title', 'slug']
     prepopulated_fields = {'slug': ['title']}
+
+
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    list_display = ['key', 'value', 'updated_at']
+    search_fields = ['key']
+
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ['question', 'category', 'order', 'is_active']
+    list_filter = ['category', 'is_active']
+    list_editable = ['order', 'is_active']
+    search_fields = ['question', 'answer']
+
+
+@admin.register(Requirement)
+class RequirementAdmin(admin.ModelAdmin):
+    list_display = ['title', 'country', 'order', 'is_active']
+    list_filter = ['is_active']
+    list_editable = ['order', 'is_active']
+    search_fields = ['title', 'description']
+    raw_id_fields = ['country']

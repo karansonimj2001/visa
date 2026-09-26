@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { trackApplication } from '../api/applications'
+import useSiteSettings, { getSupportPhone } from '../hooks/useSiteSettings'
 
 function Header() {
   return (
@@ -31,10 +32,12 @@ function Header() {
 }
 
 function Footer() {
+  const settings = useSiteSettings()
+  const supportPhone = getSupportPhone(settings)
   return (
     <footer className="bg-blue-900 text-white mt-16">
       <div className="max-w-7xl mx-auto px-6 py-8 text-center text-sm text-blue-200">
-        <p>256-bit SSL Encrypted | Secure Application Process | 24/7 Support Hotline (+971 4 000 0000)</p>
+        <p>256-bit SSL Encrypted | Secure Application Process{supportPhone ? ` | 24/7 Support Hotline (${supportPhone.display})` : ''}</p>
         <p className="mt-2 text-blue-300">© 2025 Dubai Visa Services Portal.</p>
       </div>
     </footer>

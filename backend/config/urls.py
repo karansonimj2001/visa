@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from core.views import CountryViewSet, VisaTypeViewSet, PricingViewSet, DestinationViewSet
+from core.views import (
+    CountryViewSet, VisaTypeViewSet, PricingViewSet, DestinationViewSet,
+    SiteSettingViewSet, FAQViewSet, RequirementViewSet,
+)
 from applications.views import ApplicationViewSet
 from payments.views import PaymentViewSet
 from payments.webhooks import razorpay_webhook
@@ -11,6 +14,9 @@ router = DefaultRouter()
 router.register(r'countries', CountryViewSet, basename='country')
 router.register(r'visa-types', VisaTypeViewSet, basename='visa-type')
 router.register(r'destinations', DestinationViewSet, basename='destination')
+router.register(r'settings', SiteSettingViewSet, basename='setting')
+router.register(r'faqs', FAQViewSet, basename='faq')
+router.register(r'requirements', RequirementViewSet, basename='requirement')
 router.register(r'pricing', PricingViewSet, basename='pricing')
 router.register(r'applications', ApplicationViewSet, basename='application')
 router.register(r'payments', PaymentViewSet, basename='payment')

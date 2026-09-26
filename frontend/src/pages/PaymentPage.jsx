@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { createRazorpayOrder } from '../api/applications'
+import useSiteSettings, { getSupportPhone } from '../hooks/useSiteSettings'
 
 function loadRazorpayScript() {
   if (window.Razorpay) return Promise.resolve(true)
@@ -113,6 +114,8 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true)
   const [initError, setInitError] = useState('')
   const [, setPaidRef] = useState('')
+  const settings = useSiteSettings()
+  const supportPhone = getSupportPhone(settings)
 
   useEffect(() => {
     createRazorpayOrder({ application_id: applicationId })
@@ -236,7 +239,7 @@ export default function PaymentPage() {
           <div className="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex items-center justify-between font-body-sm text-body-sm">
             <div className="flex items-center gap-2.5">
               <span className="material-symbols-outlined text-secondary text-[20px]">support_agent</span>
-              <span>Support Desk: <strong>+971 4 000 0000</strong></span>
+              <span>Support Desk: {supportPhone ? <a href={supportPhone.href} className="hover:underline"><strong>{supportPhone.display}</strong></a> : <strong>—</strong>}</span>
             </div>
             <span className="font-label-sm text-label-sm font-semibold text-on-tertiary-container bg-surface-container px-2 py-1 rounded">24/7 Priority</span>
           </div>

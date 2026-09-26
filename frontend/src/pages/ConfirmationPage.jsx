@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { trackApplication } from '../api/applications'
+import useSiteSettings, { getSupportPhone } from '../hooks/useSiteSettings'
 
 export default function ConfirmationPage() {
   const { referenceNumber } = useParams()
@@ -8,6 +9,8 @@ export default function ConfirmationPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [receiptStatus, setReceiptStatus] = useState('idle') // idle, preparing, ready
+  const settings = useSiteSettings()
+  const supportPhone = getSupportPhone(settings)
 
   useEffect(() => {
     trackApplication(referenceNumber)
@@ -362,14 +365,16 @@ export default function ConfirmationPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <a href="tel:+97140000000" className="inline-flex items-center gap-2 bg-gray-50 text-blue-900 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-sm">
-                    <span className="material-symbols-outlined text-[18px] text-amber-600">call</span>
-                    <span>+971 4 000 0000</span>
-                  </a>
-                  <a href="/support" className="inline-flex items-center gap-2 bg-blue-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-800 transition-colors shadow-sm">
-                    <span className="material-symbols-outlined text-[18px]">chat</span>
-                    <span>Live Chat</span>
-                  </a>
+                  {supportPhone && (
+                    <a href={supportPhone.href} className="inline-flex items-center gap-2 bg-gray-50 text-blue-900 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-sm">
+                      <span className="material-symbols-outlined text-[18px] text-amber-600">call</span>
+                      <span>{supportPhone.display}</span>
+                    </a>
+                  )}
+                  <Link to="/track" className="inline-flex items-center gap-2 bg-blue-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-800 transition-colors shadow-sm">
+                    <span className="material-symbols-outlined text-[18px]">radar</span>
+                    <span>Track Application</span>
+                  </Link>
                 </div>
               </section>
             </div>
@@ -427,7 +432,7 @@ export default function ConfirmationPage() {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-green-400">lock</span><span className="font-semibold text-white">256-bit SSL Encrypted</span></div>
               <div className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-green-400">verified</span><span className="font-semibold text-white">Secure Application Process</span></div>
-              <div className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-amber-400">call</span><span className="font-semibold text-white">24/7 Support Hotline (+971 4 000 0000)</span></div>
+              {supportPhone && (<div className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-amber-400">call</span><span className="font-semibold text-white">24/7 Support Hotline ({supportPhone.display})</span></div>)}
             </div>
             <p className="text-blue-300">© 2025 Dubai Visa Services Portal. Visa application assistance service.</p>
           </div>

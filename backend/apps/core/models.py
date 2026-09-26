@@ -131,6 +131,54 @@ class Pricing(models.Model):
             parts.append(f'to {self.destination.name}')
         return f"{' - '.join(parts)}: {self.price} {self.currency}"
 
+class SiteSetting(models.Model):
+    key = models.SlugField(unique=True, db_index=True, help_text='e.g. support_phone')
+    value = models.CharField(max_length=500, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.key} = {self.value}"
+
+
+class FAQ(models.Model):
+    CATEGORY_CHOICES = [
+        ('visa', 'Visa Type Page'),
+        ('track', 'Track Page'),
+        ('general', 'General'),
+    ]
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general', db_index=True)
+    question = models.CharField(max_length=500)
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"[{self.category}] {self.question[:60]}"
+
+
+class Requirement(models.Model):
+    country = models.ForeignKey(
+        Country, on_delete=models.CASCADE, related_name='requirements',
+        null=True, blank=True,
+        help_text='Empty = shown for every country.',
+    )
+    icon = models.CharField(max_length=50, default='description', help_text='Material Symbols icon name.')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        scope = self.country.name if self.country_id else 'all countries'
+        return f"{self.title} ({scope})"
+
+
 class BlogPost(models.Model):
     slug = models.SlugField(unique=True, db_index=True)
     title = models.CharField(max_length=255)

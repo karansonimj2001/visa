@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from core.models import Country, VisaType, Pricing, Destination
+from core.models import Country, VisaType, Destination
 
 class Command(BaseCommand):
     help = 'Seed initial countries, visa types, pricing, and destinations'
@@ -25,20 +25,6 @@ class Command(BaseCommand):
         ]
         for v in visa_types:
             VisaType.objects.get_or_create(slug=v['slug'], defaults=v)
-
-        india = Country.objects.get(slug='india-citizens')
-        uae = Country.objects.get(slug='uae-citizens')
-        single = VisaType.objects.get(slug='14-days-single')
-        multi = VisaType.objects.get(slug='30-days-multiple')
-        transit = VisaType.objects.get(slug='96-hours-transit')
-
-        pricing_data = [
-            (single, india, 85), (single, uae, 120),
-            (multi, india, 150), (multi, uae, 200),
-            (transit, india, 45), (transit, uae, 60),
-        ]
-        for vt, country, price in pricing_data:
-            Pricing.objects.get_or_create(visa_type=vt, citizen_country=country, defaults={'price': price, 'currency': 'USD'})
 
         destinations_data = [
             {'name': 'Dubai', 'slug': 'dubai', 'country': 'UAE', 'processing_time': '2-3 Days'},

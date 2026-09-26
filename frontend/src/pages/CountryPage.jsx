@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { fetchCountryBySlug } from '../api/countries'
 import { fetchVisaTypes } from '../api/visaTypes'
 import { fetchPricing } from '../api/pricing'
+import { fetchRequirements } from '../api/site'
 
 const USD_TO_AED = 3.67
 
@@ -11,6 +12,7 @@ export default function CountryPage() {
   const [country, setCountry] = useState(null)
   const [visas, setVisas] = useState([])
   const [prices, setPrices] = useState({})
+  const [requirements, setRequirements] = useState([])
   const [currency, setCurrency] = useState('USD')
   const [loading, setLoading] = useState(true)
 
@@ -21,12 +23,15 @@ export default function CountryPage() {
       Promise.all([
         fetchVisaTypes({ citizen_country: countryData.id }),
         fetchPricing({ citizen: countryData.id }),
-      ]).then(([visaRes, pricingRes]) => {
+        fetchRequirements({ country: countryData.id }),
+      ]).then(([visaRes, pricingRes, reqRes]) => {
         setVisas(visaRes.data.results || visaRes.data)
         const list = pricingRes.data.results || pricingRes.data || []
         const map = {}
-        list.forEach(p => { map[p.visa_type] = p })
+        list.forEach(p => { if (!(p.visa_type in map)) map[p.visa_type] = p })
         setPrices(map)
+        const reqList = reqRes.data.results || reqRes.data || []
+        setRequirements(reqList)
         setLoading(false)
       }).catch(() => setLoading(false))
     }).catch(() => setLoading(false))
@@ -264,18 +269,17 @@ export default function CountryPage() {
               <h3 className="font-headline-sm text-headline-sm text-primary font-bold">Mandatory Documents</h3>
             </div>
             <div className="space-y-4">
-              {[
-                { icon: 'menu_book', title: 'Passport Bio-Page Scan (Original)', desc: 'Minimum 6 months validity from planned departure. Color scan must capture machine-readable zone (MRZ lines) without glare.' },
-                { icon: 'face', title: 'Photograph (White Background)', desc: 'Recent passport-size photo, pure white background, no eyewear, ICAO compliant.' },
-                { icon: 'airplane_ticket', title: 'Confirmed Onward / Return Ticket', desc: 'Valid booking with scheduled departure from Dubai, Sharjah, or Abu Dhabi before visa expiry.' },
-              ].map(d => (
-                <div key={d.title} className="flex items-start gap-3.5 p-4 rounded-lg bg-surface-container-low shadow-sm">
+              {requirements.length === 0 && !country.is_national_id_required && (
+                <p className="font-body-sm text-body-sm text-on-surface-variant">Document checklist is being prepared for this country.</p>
+              )}
+              {requirements.map(d => (
+                <div key={d.id} className="flex items-start gap-3.5 p-4 rounded-lg bg-surface-container-low shadow-sm">
                   <div className="p-2 rounded bg-surface-container-lowest text-secondary shrink-0 shadow-sm">
                     <span className="material-symbols-outlined text-[20px]">{d.icon}</span>
                   </div>
                   <div>
                     <h4 className="font-label-lg text-label-lg font-bold text-primary">{d.title}</h4>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">{d.desc}</p>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">{d.description}</p>
                   </div>
                 </div>
               ))}
